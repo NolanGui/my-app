@@ -4,6 +4,16 @@ POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
 {
-    "email": "bob@gmail.com",
-    "password": "test"
+    "email": "alice@gmail.com",
+    "password": "eeee"
 }
+
+### GET USER BY ID 
+GET http://localhost:3000/auth/5
+
+### GET USER BY EMAIL
+GET http://localhost:3000/auth?email=bob@gmail.com
+
+### GET USER BY EMAIL
+GET http://localhost:3000/auth?email=alice@gmail.com
+

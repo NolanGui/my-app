@@ -2,7 +2,7 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { randomBytes, scrypt as _scrypt } from "crypto";
+import { randomBytes, scrypt as _scrypt, scrypt } from "crypto";
 import { promisify } from "util";
 
 @Injectable()
@@ -16,11 +16,10 @@ export class UsersService {
 
         //Se if email is in use
         const user = await this.findByEmail(email);
-        console.log("user ", user)
         if (user.length !=0) {
             throw new BadRequestException('Email already in use');
         }
-
+        
         //Hash the password by generating a salt and then hashing the password
 
         // 1. Generate the salt
@@ -39,6 +38,25 @@ export class UsersService {
     private async hashPassword(password: string, salt: string) {
         const hash = (await promisify(_scrypt)(password, salt, 32)) as Buffer;
         return hash.toString('hex');
+    }
+
+    async signin(email: string, password: string) {
+        const users = await this.findByEmail(email);
+        if (users.length == 0) {
+            throw new BadRequestException('User not found');
+        }
+
+        const user = users[0]
+
+        const [salt, storedHash] = user.password.split('.')
+
+        const hash = (await promisify(_scrypt)(password, salt, 32)) as Buffer
+
+        if (storedHash !== hash.toString('hex')) {
+            throw new BadRequestException('Email or password do not match')
+        }
+        
+        return user
     }
 
     create(email: string, password: string) {

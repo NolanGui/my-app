@@ -16,6 +16,11 @@ export class UsersController {
         this.usersService.signup(body.email, body.password)
     }
 
+    @Post('/signin')
+    signin(@Body() body: CreateUserDto) {
+        this.usersService.signin(body.email, body.password)
+    }
+
     @Get('/:id')
     @UseInterceptors(SerializeInterceptor)
     async findById(@Param('id') id: number) {

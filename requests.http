@@ -8,6 +8,15 @@ Content-Type: application/json
     "password": "tttt"
 }
 
+### Connect USER : SIGNIN
+POST http://localhost:3000/auth/signin
+Content-Type: application/json
+
+{
+    "email": "nolan@gmail.com",
+    "password": "tttt"
+}
+
 ### GET USER BY ID 
 GET http://localhost:3000/auth/5
 

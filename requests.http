@@ -4,8 +4,8 @@ POST http://localhost:3000/auth/signup
 Content-Type: application/json
 
 {
-    "email": "nolan@gmail.com",
-    "password": "tttt"
+    "email": "test@gmail.com",
+    "password": "ttest"
 }
 
 ### Connect USER : SIGNIN
@@ -16,6 +16,14 @@ Content-Type: application/json
     "email": "nolan@gmail.com",
     "password": "tttt"
 }
+
+### Witch USER : WHOAMI
+POST http://localhost:3000/auth/whoAmI
+Content-Type: application/json
+
+### Signout USER : SINGOUT
+POST http://localhost:3000/auth/signout
+Content-Type: application/json
 
 ### GET USER BY ID 
 GET http://localhost:3000/auth/5

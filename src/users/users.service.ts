@@ -55,7 +55,7 @@ export class UsersService {
         if (storedHash !== hash.toString('hex')) {
             throw new BadRequestException('Email or password do not match')
         }
-        
+
         return user
     }
 
@@ -65,6 +65,9 @@ export class UsersService {
     }
 
     async findOne(id: number) {
+        if (!id) {
+            return null
+        }
         const user = await this.repo.findOneBy({id})
         return user 
     }

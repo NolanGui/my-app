@@ -1,7 +1,8 @@
-import { Body, Controller, Param, Post, Get, Query, NotFoundException, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Param, Post, Get, Query, NotFoundException, UseInterceptors, Session } from '@nestjs/common';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { UsersService } from './users.service';
 import { SerializeInterceptor } from './interceptor/users.interceptor';
+import { User } from './entities/user.entity';
 
 @Controller('auth')
 @UseInterceptors(SerializeInterceptor)
@@ -12,13 +13,25 @@ export class UsersController {
     }
 
     @Post('/signup')
-    createUser(@Body() body: CreateUserDto) {
-        this.usersService.signup(body.email, body.password)
+    createUser(@Body() body: CreateUserDto, @Session() session: any) {
+        const user = this.usersService.signup(body.email, body.password)
+        return user
     }
 
     @Post('/signin')
-    signin(@Body() body: CreateUserDto) {
-        this.usersService.signin(body.email, body.password)
+    signin(@Body() body: CreateUserDto, @Session() session: any) {
+        const user =this.usersService.signin(body.email, body.password)
+        return user
+    }
+
+    @Post('/signout')
+    async signout(@Session() session: any) {
+        session.userId = null
+    }
+
+    @Post('/whoAmI')
+    async whoAmI(@Session() session: any) {
+        return await this.usersService.findOne(session.userId)
     }
 
     @Get('/:id')

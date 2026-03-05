@@ -1,10 +1,14 @@
-import { Body, Controller, Param, Post, Get, Query, NotFoundException, UseInterceptors, Session } from '@nestjs/common';
+import { Body, Controller, Param, Post, Get, Query, NotFoundException, UseInterceptors, Session, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dtos/createUser.dto';
 import { UsersService } from './users.service';
 import { SerializeInterceptor } from './interceptor/users.interceptor';
 import { User } from './entities/user.entity';
-
+import { CurrentUserInterceptor } from './interceptor/current.users.interceptor';
+import { AuthGuard } from './guards/auth.guard';
+import { CurrentUser } from './decorator/current-user.decorator';
+ 
 @Controller('auth')
+@UseInterceptors(CurrentUserInterceptor)
 @UseInterceptors(SerializeInterceptor)
 export class UsersController {
 
@@ -19,8 +23,9 @@ export class UsersController {
     }
 
     @Post('/signin')
-    signin(@Body() body: CreateUserDto, @Session() session: any) {
-        const user =this.usersService.signin(body.email, body.password)
+    async signin(@Body() body: CreateUserDto, @Session() session: any) {
+        const user = await this.usersService.signin(body.email, body.password)
+        session.userId = user.id
         return user
     }
 
@@ -30,8 +35,9 @@ export class UsersController {
     }
 
     @Post('/whoAmI')
-    async whoAmI(@Session() session: any) {
-        return await this.usersService.findOne(session.userId)
+    @UseGuards(AuthGuard)
+    async whoAmI(@CurrentUser() user: User) {
+        return user
     }
 
     @Get('/:id')

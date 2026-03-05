@@ -7,11 +7,9 @@ import { SerializeUserDto } from "../dtos/interceptorUser.dto";
 @Injectable()
 export class SerializeInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> | Promise<Observable<any>> {
-        console.log('Avant le handler...')
     
         return next.handle().pipe(
             map((data: any) => {
-                    console.log("Après le handler")
                     return plainToInstance(SerializeUserDto, data);
                 }
             )

@@ -65,6 +65,7 @@ export class UsersService {
     }
 
     async findOne(id: number) {
+        console.log(id)
         if (!id) {
             return null
         }

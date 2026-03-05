@@ -1,13 +1,44 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { randomBytes, scrypt as _scrypt } from "crypto";
+import { promisify } from "util";
 
 @Injectable()
 export class UsersService {
 
     constructor(@InjectRepository(User) private repo: Repository<User>) {
 
+    }
+
+    async signup(email: string, password: string) {
+
+        //Se if email is in use
+        const user = await this.findByEmail(email);
+        console.log("user ", user)
+        if (user.length !=0) {
+            throw new BadRequestException('Email already in use');
+        }
+
+        //Hash the password by generating a salt and then hashing the password
+
+        // 1. Generate the salt
+        const salt = randomBytes(8).toString('hex');
+
+        // 2. Hash the password using the salt
+        const hash = await this.hashPassword(password, salt);
+
+        // 3. Join the hash result and the salt
+        const result = salt + '.' + hash;
+
+        //Create a new user
+        return this.create(email, result);
+    }
+
+    private async hashPassword(password: string, salt: string) {
+        const hash = (await promisify(_scrypt)(password, salt, 32)) as Buffer;
+        return hash.toString('hex');
     }
 
     create(email: string, password: string) {
@@ -20,7 +51,7 @@ export class UsersService {
         return user 
     }
 
-    async find(email: string) {
+    async findByEmail(email: string) {
         const users = await this.repo.findBy({email})
         return users
     }

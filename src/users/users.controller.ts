@@ -13,7 +13,7 @@ export class UsersController {
 
     @Post('/signup')
     createUser(@Body() body: CreateUserDto) {
-        this.usersService.create(body.email, body.password)
+        this.usersService.signup(body.email, body.password)
     }
 
     @Get('/:id')
@@ -28,7 +28,7 @@ export class UsersController {
 
     @Get()
     async findUserByEmail(@Query('email') email: string) {
-        const user = await this.usersService.find(email)
+        const user = await this.usersService.findByEmail(email)
         if (!user) {
             throw new NotFoundException('Email user not found')
         }
